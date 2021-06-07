@@ -1,4 +1,4 @@
-mod mmu;
+//mod mmu;
 
 
 fn swap_n(n : &mut u8) {
@@ -39,7 +39,7 @@ pub struct CPU {
 	h : u8,
 	l : u8,
 	
-    mmu_ref : &mut mmu::MMU;
+    //mmu_ref : &mut mmu::MMU,
 
 	sp : u16,
 	pc : u16,
@@ -52,6 +52,21 @@ pub struct CPU {
 
 impl CPU {
 
+	pub fn new() -> CPU {
+		CPU {
+			a : 0, f : 0,
+			b : 0, c : 0,
+			d : 0, e : 0,
+			h : 0, l : 0,
+			//mmu_ref : &mut mmu,
+			sp : 0,
+			pc : 0,
+		}
+	}
+
+
+
+	/*
 	fn get_hl(&mut self) -> u16 {
 		return ((self.h as u16) << 8) | (self.l as u16);
 	}
@@ -87,6 +102,7 @@ impl CPU {
         self.h = ((word & 0xFF00) >> 8) as u8;
         self.l = (word & 0x00FF) as u8;
     }
+	*/
 
 
 
@@ -118,6 +134,7 @@ impl CPU {
 
 
 
+	/*
 	fn decode_execute(&mut self, opcode : u8, 0) {
 
 		let mut cycles : u8 = 0;
@@ -167,6 +184,7 @@ impl CPU {
             }
 		}
 	}
+	*/
 }
 
 
