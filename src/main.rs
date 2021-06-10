@@ -105,7 +105,7 @@ fn main() {
 
     graphics::set_mode(ctx, window_cfg);
     graphics::set_screen_coordinates(ctx, rect);
-    graphics::set_window_title(ctx, "Deity's GB");
+    graphics::set_window_title(ctx, "Fierce Deity's GB");
 
     // run main loop
     event::run(ctx, event_loop, state).unwrap();

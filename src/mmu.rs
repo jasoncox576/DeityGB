@@ -1,5 +1,6 @@
 
 pub struct MMU {
+    // TODO: Explicitly write out the memory map
     memory : [u8 ; 0x10000],
 }
 
