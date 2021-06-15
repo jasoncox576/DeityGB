@@ -12,9 +12,9 @@ use ggez::audio::SoundSource;
 use ggez::nalgebra as na;
 use std::thread;
 
-
 mod cpu;
 mod mmu;
+mod cpu_tables;
 
 struct State {
     dt: std::time::Duration,
@@ -28,6 +28,7 @@ struct State {
 impl ggez::event::EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         self.dt = timer::delta(ctx);
+		self.cpu.cycle();
         Ok(())
     }
 
