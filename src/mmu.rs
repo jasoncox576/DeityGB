@@ -20,8 +20,8 @@ pub struct MMU {
 	FF80 	FFFE 	High RAM (HRAM) 	
 	FFFF 	FFFF 	Interrupts Enable Register (IE) 	
 	*/
-    //memory : [u8 ; 0x10000],
-	memory : Vec<u8>, 
+    memory : [u8 ; 0x10000],
+	//memory : Vec<u8>, 
 
 }
 
@@ -31,8 +31,8 @@ impl MMU {
 
 	pub fn new() -> MMU {
 		MMU {
-			//memory : Box::new([0 ; 0x10000]),
-			memory : vec![0; 0x10000],
+			memory : Box::new([0 ; 0x10000]),
+			//memory : vec![0; 0x10000],
 		}
 	}
 
