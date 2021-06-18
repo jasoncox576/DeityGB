@@ -214,20 +214,26 @@ impl CPU {
 
     // performs a F/D/E/WB cycle
     pub fn cycle(&mut self) {
-        let next_opcode : u8 = self.fetch();
+		println!("Cycle");
+        let next_opcode : u8 = self.fetch(self.pc);
+		println!("fetched");
         self.decode_execute(next_opcode);
     }
 
 
 	// fetches the next byte in memory
-	fn fetch(&mut self) -> u8 {
-		let next_byte : u8 = self.mmu_ref.get_byte(self.pc as usize);
+	fn fetch(self, addr : u16) -> u8 {
+		let next_byte : u8 = self.mmu_ref.get_byte(addr as usize);
 		return next_byte;
 	}
 
-	fn next_word(&mut self) -> u16 {
-		let b1 = (self.fetch() as u16) << 8;
-		let b2 = self.fetch() as u16;
+	fn next_word(self, addr : u16) -> u16 {
+		println!("next word");
+		let b1 = (self.fetch(addr) as u16) << 8;
+		println!("next word 2");
+		//let b2 = self.fetch(addr+1) as u16;
+		let b2 = 0;
+		println!("next word 3");
 		return b1 | b2;
 	}
 
@@ -239,7 +245,7 @@ impl CPU {
 		let cb_prefix : bool = (opcode == 0xCB);
 		if cb_prefix {
 			self.pc += 1;
-			opcode = self.fetch();
+			opcode = self.fetch(self.pc);
 		}
 		let i1 = ((opcode & 0xF0) >> 4) as usize;
 		let i2 = (opcode & 0x0F) as usize;
@@ -247,10 +253,13 @@ impl CPU {
 		let	instruction_size : u8 = ternary!(cb_prefix, 2, cpu_tables::instruction_sizes[i1][i2]);
 	
 		// pre-emptive execution to save space below
-		let nn = self.next_word();
-		let n = self.fetch();
+		println!("Test");
+		let nn = self.next_word(self.pc+1);
+		let n = self.fetch(self.pc+1);
 
 		if cb_prefix {
+			// decrement to 'back up' once
+			self.pc = self.pc - 1;
 			match opcode {
 
 				0x00 => self.b = rlc(self.b, &mut self.f),
@@ -598,7 +607,7 @@ impl CPU {
 				0x73 => self.mmu_ref.set_byte(self.get_hl() as usize, self.e),
 				0x74 => self.mmu_ref.set_byte(self.get_hl() as usize, self.h),
 				0x75 => self.mmu_ref.set_byte(self.get_hl() as usize, self.l),
-				0x76 => self.halt_flag = true;
+				0x76 => self.halt_flag = true,
 				0x77 => self.mmu_ref.set_byte(self.get_hl() as usize, self.a),
 				0x78 => self.a = self.b,
 				0x79 => self.a = self.c,
@@ -655,8 +664,9 @@ impl CPU {
 					panic!("Error: Invalid opcode!");
 				}
 			}
+		
 		}
-
+		self.pc += instruction_size as u16;
 	}
 }
 
