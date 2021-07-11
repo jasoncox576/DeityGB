@@ -1,5 +1,5 @@
 
-#[derive(Copy, Clone)]
+#[derive(Clone)]
 pub struct MMU {
 
 	/*
@@ -20,9 +20,21 @@ pub struct MMU {
 	FF80 	FFFE 	High RAM (HRAM) 	
 	FFFF 	FFFF 	Interrupts Enable Register (IE) 	
 	*/
-    memory : [u8 ; 0x10000],
-	//memory : Vec<u8>, 
 
+	/*
+
+	Interrupt flags data
+
+	Bit 0: VBlank   Interrupt Enable  (INT 40h)  (1=Enable)
+	Bit 1: LCD STAT Interrupt Enable  (INT 48h)  (1=Enable)
+	Bit 2: Timer    Interrupt Enable  (INT 50h)  (1=Enable)
+	Bit 3: Serial   Interrupt Enable  (INT 58h)  (1=Enable)
+	Bit 4: Joypad   Interrupt Enable  (INT 60h)  (1=Enable)
+	*/
+
+
+
+	pub memory : Vec<u8>, 
 }
 
 
@@ -31,16 +43,40 @@ impl MMU {
 
 	pub fn new() -> MMU {
 		MMU {
-			memory : Box::new([0 ; 0x10000]),
-			//memory : vec![0; 0x10000],
+			//memory : [0 ; 0x10000],
+			memory : vec![0; 0x10000],
 		}
 	}
 
     pub fn set_byte(&mut self, addr: usize, data : u8) {
         self.memory[addr] = data;
     }
-    pub fn get_byte(self, addr: usize) -> u8 {
+    pub fn get_byte(&self, addr: usize) -> u8 {
         return self.memory[addr];
     }
-    // TODO more stuff needed? Most likely
+
+	pub fn enable_interrupts(&mut self) {
+		// TODO: Not sure if the whole bit should be set
+		self.memory[0xFFFF] = 0xFF;
+	}
+
+	pub fn disable_interrupts(&mut self) {
+		// TODO: Not sure if the whole bit should be set
+		self.memory[0xFFFF] = 0x00;
+	}
+
+
+	
+
+	pub fn load_rom(&mut self, rom_data : Vec<u8>) {
+		// TODO assuming, for now, that ROM data leq than 4000 bytes
+		for i in 0..(rom_data.len()) {
+			self.memory[i] = rom_data[i];
+			println!("{:#02x}", rom_data[i]);
+		}
+		println!("=================================");
+
+	}
+
+
 }

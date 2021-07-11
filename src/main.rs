@@ -2,18 +2,20 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::time::{Duration, Instant};
+
+
+
 use ggez::*;
 use ggez::event::{KeyCode, KeyMods};
-use ggez::input::keyboard;
-use ggez::audio::SoundSource;
+
+
 use ggez::nalgebra as na;
-use std::thread;
+
 
 mod cpu;
 mod mmu;
+mod ppu;
+mod apu;
 mod cpu_tables;
 
 struct State {
@@ -28,7 +30,10 @@ struct State {
 impl ggez::event::EventHandler for State {
     fn update(&mut self, ctx: &mut Context) -> GameResult {
         self.dt = timer::delta(ctx);
-		self.cpu.cycle();
+		//let mmu_clone = self.mmu.clone();
+		//let updated_mmu = self.cpu.cycle(mmu_clone);
+		//self.mmu = updated_mmu;
+		self.cpu.cycle(&mut self.mmu);
         Ok(())
     }
 
@@ -71,14 +76,21 @@ fn main() {
     };
     let mut byte_buffer = Vec::new();
     cartridge.read_to_end(&mut byte_buffer);
+	/*
     let mut instruction_buffer : [u8 ; 8000] = [0 ; 8000];
     for i in (0..byte_buffer.len()-1).step_by(2) {
         instruction_buffer[i] = byte_buffer[i];
         instruction_buffer[i+1] = byte_buffer[i+1];
-        println!("{:#04x}", instruction_buffer[i]);
+        //println!("{:#04x}", instruction_buffer[i]);
 	}
-	let mmu = mmu::MMU::new();
-    let cpu = cpu::CPU::new();
+	*/
+	let mut mmu = mmu::MMU::new();
+    let mut cpu = cpu::CPU::new();
+    //let ppu = ppu::PPU::new();
+	//let apu = apu::APU::new(mmu_ref);
+
+	mmu.load_rom(byte_buffer);
+
 
     let state = &mut State { dt: std::time::Duration::new(0, 0), pc : 0, cpu : cpu, mmu : mmu, current_instruction : 0, delay: 1};
 
